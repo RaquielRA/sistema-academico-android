@@ -13,3 +13,28 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Ignorar IDE e arquivos de configuração
+.idea/
+.gradle/
+build/
+*.iml
+local.properties
+
+# Ignorar outros arquivos de configuração do Gradle
+gradle/
+gradlew
+gradlew.bat
+gradle.properties
+settings.gradle.kts
+build.gradle.kts
+
+# Dentro do app/
+app/*.gradle.kts
+app/proguard-rules.pro
+app/local.properties
+app/*.iml
+
+app/*
+!app/src/
+
