@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.example.sistemaacademicoandroid.sistema.Sistema;
+
 public class Aluno extends Usuario {
 
     private final List<Integer> turmasIds;
@@ -19,38 +21,33 @@ public class Aluno extends Usuario {
     }
 
     // Receber uma turma
-    public String adicionarTurma(Turma turma) {
+    public String adicionarTurma(int turmaId) {
+        Turma turma = Sistema.getInstancia().buscarTurmaPorId(turmaId);
         if (turma == null) return "Erro ao adicionar turma: Turma inválida.";
-        if (turmasIds.contains(turma.getId())) return "Aluno já está nesta turma.";
-        turmasIds.add(turma.getId());
+        if (turmasIds.contains(turmaId)) return "Aluno já está nesta turma.";
+        turmasIds.add(turmaId);
         return "Aluno " + getNome() + " adicionado à turma " + turma.getNome();
     }
 
-    // Consultar turmas
-    public List<String> verTurmas(List<Turma> todasTurmas) {
+    // Consultar turmas do aluno
+    public List<String> verTurmas() {
         List<String> nomesTurmas = new ArrayList<>();
         for (Integer id : turmasIds) {
-            for (Turma t : todasTurmas) {
-                if (t.getId() == id) {
-                    nomesTurmas.add(t.getNome());
-                    break;
-                }
-            }
+            Turma t = Sistema.getInstancia().buscarTurmaPorId(id);
+            if (t != null) nomesTurmas.add(t.getNome());
         }
         return nomesTurmas;
     }
 
     // Consultar disciplinas
-    public List<String> verDisciplinas(List<Turma> todasTurmas, List<Disciplina> todasDisciplinas) {
+    public List<String> verDisciplinas() {
         List<String> nomesDisciplinas = new ArrayList<>();
         for (Integer turmaId : turmasIds) {
-            for (Turma t : todasTurmas) {
-                if (t.getId() == turmaId) {
-                    for (Disciplina d : todasDisciplinas) {
-                        if (d.getId() == t.getDisciplinaId() && !nomesDisciplinas.contains(d.getNome())) {
-                            nomesDisciplinas.add(d.getNome());
-                        }
-                    }
+            Turma t = Sistema.getInstancia().buscarTurmaPorId(turmaId);
+            if (t != null) {
+                Disciplina d = Sistema.getInstancia().buscarDisciplinaPorId(t.getDisciplinaId());
+                if (d != null && !nomesDisciplinas.contains(d.getNome())) {
+                    nomesDisciplinas.add(d.getNome());
                 }
             }
         }
@@ -58,49 +55,46 @@ public class Aluno extends Usuario {
     }
 
     // Consultar professores
-    public List<String> verProfessores(List<Turma> todasTurmas, List<Professor> todosProfessores) {
+    public List<String> verProfessores() {
         List<String> professores = new ArrayList<>();
         for (Integer turmaId : turmasIds) {
-            for (Turma t : todasTurmas) {
-                if (t.getId() == turmaId) {
-                    Professor prof = t.getProfessor(todosProfessores);
-                    String nomeProf = (prof != null) ? prof.getNome() : "Sem professor";
-                    if (!professores.contains(nomeProf)) {
-                        professores.add(nomeProf);
-                    }
-                }
+            Turma t = Sistema.getInstancia().buscarTurmaPorId(turmaId);
+            if (t != null && t.getProfessorId() != null) {
+                Professor p = Sistema.getInstancia().buscarProfessorPorId(t.getProfessorId());
+                String nomeProf = (p != null) ? p.getNome() : "Sem professor";
+                if (!professores.contains(nomeProf)) professores.add(nomeProf);
             }
         }
         return professores;
     }
 
     // Consultar colegas
-    public Map<String, List<String>> verColegas(List<Turma> todasTurmas, List<Aluno> todosAlunos) {
+    public Map<String, List<String>> verColegas() {
         Map<String, List<String>> colegasPorTurma = new HashMap<>();
         for (Integer turmaId : turmasIds) {
-            for (Turma t : todasTurmas) {
-                if (t.getId() == turmaId) {
-                    List<String> colegas = new ArrayList<>();
-                    for (Aluno a : t.getAlunos(todosAlunos)) {
-                        if (!a.equals(this)) {
-                            colegas.add(a.getNome());
-                        }
+            Turma t = Sistema.getInstancia().buscarTurmaPorId(turmaId);
+            if (t != null) {
+                List<String> colegas = new ArrayList<>();
+                for (Integer alunoId : t.getAlunosIds()) {
+                    if (!alunoId.equals(this.getId())) {
+                        Aluno a = Sistema.getInstancia().buscarAlunoPorId(alunoId);
+                        if (a != null) colegas.add(a.getNome());
                     }
-                    colegasPorTurma.put(t.getNome(), colegas);
                 }
+                colegasPorTurma.put(t.getNome(), colegas);
             }
         }
         return colegasPorTurma;
     }
 
-    // Consultar notas
+    // Consultar nota de uma disciplina
     public Double verNota(int disciplinaId) {
-        return (notas != null) ? notas.get(disciplinaId) : null;
+        return notas.get(disciplinaId);
     }
 
-    // Consultar faltas
+    // Consultar faltas de uma disciplina
     public Integer verFaltas(int disciplinaId) {
-        return (faltas != null) ? faltas.get(disciplinaId) : null;
+        return faltas.get(disciplinaId);
     }
 
     // Métodos para o professor lançar notas/faltas

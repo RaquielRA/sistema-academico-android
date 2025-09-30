@@ -1,5 +1,6 @@
 package com.example.sistemaacademicoandroid.model;
 
+import com.example.sistemaacademicoandroid.sistema.Sistema;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,58 +23,59 @@ public class Professor extends Usuario {
     }
 
     // Receber uma turma (chamado pelo Administrador)
-    public String adicionarTurma(Turma turma) {
-        try {
-            if (turma == null) throw new Exception("Turma inválida.");
-            if (turmasIds.contains(turma.getId())) return "Professor já está nesta turma.";
-            turmasIds.add(turma.getId());
-            return "Professor atribuído à turma " + turma.getNome();
-        } catch (Exception e) {
-            return "Erro ao adicionar turma: " + e.getMessage();
-        }
+    public String adicionarTurma(int turmaId) {
+        Turma turma = Sistema.getInstancia().buscarTurmaPorId(turmaId);
+        if (turma == null) return "Erro ao adicionar turma: Turma inválida.";
+        if (turmasIds.contains(turmaId)) return "Professor já está nesta turma.";
+        turmasIds.add(turmaId);
+        return "Professor atribuído à turma " + turma.getNome();
     }
 
     // Consultar turmas do professor
-    public List<String> verTurmas(List<Turma> todasTurmas) {
+    public List<String> verTurmas() {
         List<String> nomesTurmas = new ArrayList<>();
         for (Integer id : turmasIds) {
-            for (Turma t : todasTurmas) {
-                if (t.getId() == id) {
-                    nomesTurmas.add(t.getNome());
-                    break;
-                }
-            }
+            Turma t = Sistema.getInstancia().buscarTurmaPorId(id);
+            if (t != null) nomesTurmas.add(t.getNome());
         }
         return nomesTurmas;
     }
 
-    // Consultar alunos de uma turma específica (precisa passar lista de todos os alunos)
-    public List<String> verAlunos(int turmaId, List<Turma> todasTurmas, List<Aluno> todosAlunos) {
+    // Consultar alunos de uma turma específica
+    public List<String> verAlunos(int turmaId) {
         List<String> nomesAlunos = new ArrayList<>();
-        for (Turma t : todasTurmas) {
-            if (t.getId() == turmaId) {
-                for (Integer alunoId : t.getAlunosIds()) {
-                    for (Aluno a : todosAlunos) {
-                        if (a.getId() == alunoId) {
-                            nomesAlunos.add(a.getNome());
-                            break;
-                        }
-                    }
-                }
-                break;
+        Turma turma = Sistema.getInstancia().buscarTurmaPorId(turmaId);
+        if (turma != null) {
+            for (Integer alunoId : turma.getAlunosIds()) {
+                Aluno aluno = Sistema.getInstancia().buscarAlunoPorId(alunoId);
+                if (aluno != null) nomesAlunos.add(aluno.getNome());
             }
         }
         return nomesAlunos;
+    }
+
+    // Consultar disciplinas das turmas que o professor leciona
+    public List<String> verDisciplinas() {
+        List<String> nomesDisciplinas = new ArrayList<>();
+        for (Integer turmaId : turmasIds) {
+            Turma t = Sistema.getInstancia().buscarTurmaPorId(turmaId);
+            if (t != null) {
+                Disciplina d = Sistema.getInstancia().buscarDisciplinaPorId(t.getDisciplinaId());
+                if (d != null && !nomesDisciplinas.contains(d.getNome())) {
+                    nomesDisciplinas.add(d.getNome());
+                }
+            }
+        }
+        return nomesDisciplinas;
     }
 
     // Lançar nota de um aluno em uma disciplina
     public String lancarNota(int disciplinaId, int alunoId, double nota) {
         try {
             if (!notas.containsKey(disciplinaId)) {
-                notas.put(disciplinaId, new HashMap<Integer, Double>());
+                notas.put(disciplinaId, new HashMap<>());
             }
-            Map<Integer, Double> mapaNotas = notas.get(disciplinaId);
-            mapaNotas.put(alunoId, nota);
+            notas.get(disciplinaId).put(alunoId, nota);
             return "Nota lançada com sucesso!";
         } catch (Exception e) {
             return "Erro ao lançar nota: " + e.getMessage();
@@ -84,10 +86,9 @@ public class Professor extends Usuario {
     public String lancarFaltas(int disciplinaId, int alunoId, int quantidade) {
         try {
             if (!faltas.containsKey(disciplinaId)) {
-                faltas.put(disciplinaId, new HashMap<Integer, Integer>());
+                faltas.put(disciplinaId, new HashMap<>());
             }
-            Map<Integer, Integer> mapaFaltas = faltas.get(disciplinaId);
-            mapaFaltas.put(alunoId, quantidade);
+            faltas.get(disciplinaId).put(alunoId, quantidade);
             return "Faltas lançadas com sucesso!";
         } catch (Exception e) {
             return "Erro ao lançar faltas: " + e.getMessage();
@@ -97,10 +98,7 @@ public class Professor extends Usuario {
     // Consultar nota de um aluno
     public Double verNota(int disciplinaId, int alunoId) {
         if (notas.containsKey(disciplinaId)) {
-            Map<Integer, Double> mapaNotas = notas.get(disciplinaId);
-            if (mapaNotas.containsKey(alunoId)) {
-                return mapaNotas.get(alunoId);
-            }
+            return notas.get(disciplinaId).get(alunoId);
         }
         return null;
     }
@@ -108,15 +106,12 @@ public class Professor extends Usuario {
     // Consultar faltas de um aluno
     public Integer verFaltas(int disciplinaId, int alunoId) {
         if (faltas.containsKey(disciplinaId)) {
-            Map<Integer, Integer> mapaFaltas = faltas.get(disciplinaId);
-            if (mapaFaltas.containsKey(alunoId)) {
-                return mapaFaltas.get(alunoId);
-            }
+            return faltas.get(disciplinaId).get(alunoId);
         }
         return null;
     }
 
-    // Getters
+    // Getter
     public List<Integer> getTurmasIds() { return turmasIds; }
     public Map<Integer, Map<Integer, Double>> getNotas() { return notas; }
     public Map<Integer, Map<Integer, Integer>> getFaltas() { return faltas; }

@@ -37,7 +37,7 @@ public class Disciplina {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (!(obj instanceof Disciplina)) return false;
         Disciplina other = (Disciplina) obj;
         return id == other.id;
     }
@@ -49,10 +49,6 @@ public class Disciplina {
 
     @Override
     public String toString() {
-        return "Disciplina{" +
-                "id=" + id +
-                ", nome='" + nome + '\'' +
-                ", cargaHoraria=" + cargaHoraria +
-                '}';
+        return nome + " (" + cargaHoraria + "h)";
     }
 }

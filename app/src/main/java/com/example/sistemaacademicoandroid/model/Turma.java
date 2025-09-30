@@ -1,17 +1,22 @@
 package com.example.sistemaacademicoandroid.model;
 
+import com.example.sistemaacademicoandroid.sistema.Sistema;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Turma {
 
     private int id;
     private String nome;
-    private int disciplinaId;       // ID da disciplina associada
-    private int professorId;        // ID do professor que leciona
+    private int disciplinaId;        // ID da disciplina associada
+    private Integer professorId;     // ID do professor que leciona (pode ser null)
     private List<Integer> alunosIds; // IDs dos alunos matriculados
 
-    public Turma(int id, String nome, int disciplinaId, int professorId) {
+    public Turma(int id, String nome, int disciplinaId, Integer professorId) {
+        if (nome == null || nome.trim().isEmpty()) {
+            throw new IllegalArgumentException("Nome da turma inválido.");
+        }
         this.id = id;
         this.nome = nome;
         this.disciplinaId = disciplinaId;
@@ -21,65 +26,44 @@ public class Turma {
 
     // Adicionar aluno à turma
     public String adicionarAluno(Aluno aluno) {
-        try {
-            if (aluno == null) throw new Exception("Aluno inválido.");
-            if (alunosIds.contains(aluno.getId())) return "Aluno já matriculado nesta turma.";
-            alunosIds.add(aluno.getId());
-            return "Aluno " + aluno.getNome() + " adicionado à turma " + this.nome;
-        } catch (Exception e) {
-            return "Erro ao adicionar aluno: " + e.getMessage();
-        }
+        if (aluno == null) return "Aluno inválido.";
+        if (alunosIds.contains(aluno.getId())) return "Aluno já matriculado nesta turma.";
+        alunosIds.add(aluno.getId());
+        return "Aluno " + aluno.getNome() + " adicionado à turma " + this.nome;
     }
 
     // Remover aluno da turma
     public String removerAluno(Aluno aluno) {
-        try {
-            if (aluno == null) throw new Exception("Aluno inválido.");
-            if (!alunosIds.contains(aluno.getId())) return "Aluno não está nesta turma.";
-            alunosIds.remove((Integer) aluno.getId());
-            return "Aluno " + aluno.getNome() + " removido da turma " + this.nome;
-        } catch (Exception e) {
-            return "Erro ao remover aluno: " + e.getMessage();
-        }
+        if (aluno == null) return "Aluno inválido.";
+        if (!alunosIds.contains(aluno.getId())) return "Aluno não está nesta turma.";
+        alunosIds.remove((Integer) aluno.getId());
+        return "Aluno " + aluno.getNome() + " removido da turma " + this.nome;
     }
 
     // Definir ou alterar professor da turma
     public String definirProfessor(Professor professor) {
-        try {
-            if (professor == null) throw new Exception("Professor inválido.");
-            this.professorId = professor.getId();
-            return "Professor " + professor.getNome() + " atribuído à turma " + this.nome;
-        } catch (Exception e) {
-            return "Erro ao definir professor: " + e.getMessage();
-        }
+        if (professor == null) return "Professor inválido.";
+        this.professorId = professor.getId();
+        return "Professor " + professor.getNome() + " atribuído à turma " + this.nome;
     }
 
-    // Métodos auxiliares para obter objetos a partir de IDs
-    public List<Aluno> getAlunos(List<Aluno> todosAlunos) {
+    // Obter objetos a partir de IDs usando o Sistema
+    public List<Aluno> getAlunos() {
         List<Aluno> lista = new ArrayList<>();
         for (Integer id : alunosIds) {
-            for (Aluno a : todosAlunos) {
-                if (a.getId() == id) {
-                    lista.add(a);
-                    break;
-                }
-            }
+            Aluno a = Sistema.getInstancia().buscarAlunoPorId(id);
+            if (a != null) lista.add(a);
         }
         return lista;
     }
 
-    public Professor getProfessor(List<Professor> todosProfessores) {
-        for (Professor p : todosProfessores) {
-            if (p.getId() == this.professorId) return p;
-        }
-        return null;
+    public Professor getProfessor() {
+        if (professorId == null) return null;
+        return Sistema.getInstancia().buscarProfessorPorId(professorId);
     }
 
-    public Disciplina getDisciplina(List<Disciplina> todasDisciplinas) {
-        for (Disciplina d : todasDisciplinas) {
-            if (d.getId() == this.disciplinaId) return d;
-        }
-        return null;
+    public Disciplina getDisciplina() {
+        return Sistema.getInstancia().buscarDisciplinaPorId(disciplinaId);
     }
 
     // Getters e Setters
@@ -92,8 +76,8 @@ public class Turma {
     public int getDisciplinaId() { return disciplinaId; }
     public void setDisciplinaId(int disciplinaId) { this.disciplinaId = disciplinaId; }
 
-    public int getProfessorId() { return professorId; }
-    public void setProfessorId(int professorId) { this.professorId = professorId; }
+    public Integer getProfessorId() { return professorId; }
+    public void setProfessorId(Integer professorId) { this.professorId = professorId; }
 
     public List<Integer> getAlunosIds() { return alunosIds; }
     public void setAlunosIds(List<Integer> alunosIds) { this.alunosIds = alunosIds; }
@@ -102,13 +86,18 @@ public class Turma {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (!(obj instanceof Turma)) return false;
         Turma other = (Turma) obj;
         return id == other.id;
     }
 
     @Override
     public int hashCode() {
-        return Integer.hashCode(id);
+        return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return nome;
     }
 }

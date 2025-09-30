@@ -60,27 +60,6 @@ public class Usuario {
     public void setTipoUsuario(TipoUsuario tipoUsuario) { this.tipoUsuario = tipoUsuario; }
 
     // Métodos
-    public String autenticar(String login, String senha) {
-        try {
-            if (login == null || senha == null) {
-                throw new Exception("Login ou senha não podem ser nulos.");
-            }
-            if (!Pattern.matches(EMAIL_REGEX, login)) {
-                throw new Exception("Login inválido. Deve estar no formato de email.");
-            }
-            if (senha.length() != TAMANHO_SENHA) {
-                throw new Exception("Senha inválida. Deve ter exatamente " + TAMANHO_SENHA + " caracteres.");
-            }
-            if (this.login.equals(login) && this.senha.equals(senha)) {
-                return "Autenticação bem-sucedida!";
-            } else {
-                return "Login ou senha incorretos.";
-            }
-        } catch (Exception e) {
-            String msg = (e.getMessage() != null) ? e.getMessage() : "Ocorreu um erro inesperado.";
-            return "Erro na autenticação: " + msg;
-        }
-    }
 
     public String alterarSenha(String senhaAntiga, String novaSenha) {
         try {
