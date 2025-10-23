@@ -1,10 +1,11 @@
-package com.example.sistemaacademicoandroid.ui;
+package com.example.sistemaacademicoandroid.ui.aluno;
 
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import android.content.Intent;
 
 import com.example.sistemaacademicoandroid.R;
 import com.example.sistemaacademicoandroid.model.Aluno;
@@ -47,8 +48,9 @@ public class AlunoActivity extends AppCompatActivity {
 
         // Botão "Ver Turmas"
         btnVerTurmas.setOnClickListener(v -> {
-            List<String> turmas = aluno.verTurmas();
-            Toast.makeText(this, turmas.isEmpty() ? "Nenhuma turma." : turmas.toString(), Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(AlunoActivity.this, TurmasAlunoActivity.class);
+            intent.putExtra("alunoId", aluno.getId());
+            startActivity(intent);
         });
 
         // Botão "Ver Disciplinas"

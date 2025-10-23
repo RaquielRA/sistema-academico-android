@@ -1,4 +1,4 @@
-package com.example.sistemaacademicoandroid.ui;
+package com.example.sistemaacademicoandroid.ui.professor;
 
 import android.os.Bundle;
 import android.widget.Button;
@@ -8,9 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.sistemaacademicoandroid.R;
 import com.example.sistemaacademicoandroid.model.Professor;
-import com.example.sistemaacademicoandroid.model.Aluno;
 import com.example.sistemaacademicoandroid.model.Turma;
-import com.example.sistemaacademicoandroid.model.Disciplina;
 import com.example.sistemaacademicoandroid.sistema.Sistema;
 
 import java.util.List;

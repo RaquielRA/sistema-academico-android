@@ -10,6 +10,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.sistemaacademicoandroid.R;
 import com.example.sistemaacademicoandroid.model.Usuario;
 import com.example.sistemaacademicoandroid.sistema.Sistema;
+import com.example.sistemaacademicoandroid.ui.administrador.AdministradorActivity;
+import com.example.sistemaacademicoandroid.ui.aluno.AlunoActivity;
+import com.example.sistemaacademicoandroid.ui.professor.ProfessorActivity;
 
 public class LoginActivity extends AppCompatActivity {
 

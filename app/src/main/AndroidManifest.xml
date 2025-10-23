@@ -10,7 +10,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.MyApplication">
+        android:theme="@style/Theme.MyApplication"
+        tools:targetApi="31">
 
         <!-- SplashActivity será a primeira tela -->
         <activity
@@ -22,24 +23,27 @@
             </intent-filter>
         </activity>
 
-        <!-- LoginActivity será aberta depois pela SplashActivity -->
+        <!-- Login -->
         <activity
             android:name=".ui.LoginActivity"
-            android:exported="true">
-        </activity>
-
-        <activity
-            android:name=".ui.AlunoActivity"
             android:exported="true" />
 
-        <activity
-            android:name=".ui.ProfessorActivity"
-            android:exported="true" />
+        <!-- Telas do Administrador -->
+        <activity android:name=".ui.administrador.AdministradorActivity" android:exported="true" />
+        <activity android:name=".ui.administrador.AdministradorDisciplinasActivity" android:exported="true" />
+        <activity android:name=".ui.administrador.AdministradorTurmasActivity" android:exported="true" />
+        <activity android:name=".ui.administrador.AdministradorProfessoresActivity" android:exported="true" />
+        <activity android:name=".ui.administrador.AdministradorAlunosActivity" android:exported="true" />
 
-        <activity
-            android:name=".ui.AdministradorActivity"
-            android:exported="true" />
+        <!-- Telas do Professor -->
+        <activity android:name=".ui.professor.ProfessorActivity" android:exported="true" />
+        <activity android:name=".ui.professor.ProfessorTurmasActivity" android:exported="true" />
+        <activity android:name=".ui.professor.ProfessorDisciplinasActivity" android:exported="true" />
+
+        <!-- Telas do Aluno -->
+        <activity android:name=".ui.aluno.AlunoActivity" android:exported="true" />
+        <activity android:name=".ui.aluno.DisciplinasAlunoActivity" android:exported="true" />
+        <activity android:name=".ui.aluno.TurmasAlunoActivity" android:exported="true" />
 
     </application>
-
 </manifest>

@@ -1,4 +1,4 @@
-package com.example.sistemaacademicoandroid.ui;
+package com.example.sistemaacademicoandroid.ui.administrador;
 
 import android.os.Bundle;
 import android.widget.Button;
@@ -15,7 +15,6 @@ import com.example.sistemaacademicoandroid.model.Turma;
 import com.example.sistemaacademicoandroid.sistema.Sistema;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class AdministradorActivity extends AppCompatActivity {
 
